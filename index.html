@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PackPal - Trip Reminder</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            color: white;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            margin: 20px auto;
+            width: 400px;
+            border-radius: 15px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            background: white;
+            color: black;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>PackPal 🎒</h1>
+
+<div class="card">
+    <h2>Add Trip</h2>
+    <input type="text" id="tripName" placeholder="Trip Name">
+    <input type="datetime-local" id="tripDate">
+    <button onclick="addTrip()">Add Trip</button>
+</div>
+
+<div class="card">
+    <h2 id="tripTitle"></h2>
+    <p id="countdown"></p>
+
+    <input type="text" id="itemInput" placeholder="Add Item">
+    <button onclick="addItem()">Add</button>
+
+    <ul id="itemList"></ul>
+</div>
+
+<script>
+let currentTrip = null;
+
+// Ask notification permission
+if ("Notification" in window) {
+    Notification.requestPermission();
+}
+
+function addTrip() {
+    const name = document.getElementById("tripName").value;
+    const date = document.getElementById("tripDate").value;
+
+    if (!name || !date) return alert("Fill all fields");
+
+    currentTrip = { name, date, items: [], reminded: false };
+    localStorage.setItem("trip", JSON.stringify(currentTrip));
+
+    displayTrip();
+}
+
+function displayTrip() {
+    const data = JSON.parse(localStorage.getItem("trip"));
+    if (!data) return;
+
+    currentTrip = data;
+    document.getElementById("tripTitle").innerText =
+        data.name + " - " + data.date;
+
+    renderItems();
+    updateCountdown();
+}
+
+function addItem() {
+    const item = document.getElementById("itemInput").value;
+    if (!item) return;
+
+    currentTrip.items.push({ name: item, packed: false });
+    localStorage.setItem("trip", JSON.stringify(currentTrip));
+
+    document.getElementById("itemInput").value = "";
+    renderItems();
+}
+
+function renderItems() {
+    const list = document.getElementById("itemList");
+    list.innerHTML = "";
+
+    currentTrip.items.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <input type="checkbox"
+                ${item.packed ? "checked" : ""}
+                onchange="toggleItem(${index})">
+            ${item.name}
+        `;
+        list.appendChild(li);
+    });
+}
+
+function toggleItem(index) {
+    currentTrip.items[index].packed =
+        !currentTrip.items[index].packed;
+    localStorage.setItem("trip", JSON.stringify(currentTrip));
+}
+
+function updateCountdown() {
+    if (!currentTrip) return;
+
+    const tripDate = new Date(currentTrip.date);
+    const now = new Date();
+    const diff = tripDate - now;
+
+    const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
+    const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    document.getElementById("countdown").innerText =
+        daysLeft + " days left (" + hoursLeft + " hours)";
+
+    // 🔔 3 Hour Reminder Logic
+    if (hoursLeft <= 3 && hoursLeft > 0 && !currentTrip.reminded) {
+        if (Notification.permission === "granted") {
+            new Notification("Trip Reminder 🚀", {
+                body: "Only 3 hours left for your " + currentTrip.name + " trip!"
+            });
+        }
+        currentTrip.reminded = true;
+        localStorage.setItem("trip", JSON.stringify(currentTrip));
+    }
+}
+
+// Check every minute
+setInterval(updateCountdown, 60000);
+
+displayTrip();
+</script>
+
+</body>
+</html>

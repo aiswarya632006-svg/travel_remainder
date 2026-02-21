@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Reminder Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard">
+
+    <div class="card">
+
+        <h2>✈️ Travel Reminder Dashboard</h2>
+
+        <!-- Add Trip Section -->
+        <h3>Add New Trip</h3>
+
+        <input type="text" id="destination" placeholder="Enter Destination">
+
+        <input type="datetime-local" id="trip_time">
+
+        <textarea id="package_list" placeholder="Enter Package List (comma separated)"></textarea>
+
+        <button onclick="addTrip()">Add Trip</button>
+
+        <!-- Countdown Section -->
+        <h3>Next Trip Countdown</h3>
+        <div id="countdownBox">
+            <p id="countdownText">No upcoming trips</p>
+        </div>
+
+        <!-- Trip List Section -->
+        <h3>Your Trips</h3>
+        <div id="tripList">
+            <!-- Trips will appear here -->
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
