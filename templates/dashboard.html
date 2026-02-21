@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Your Trips</h1>
+
+    <ul>
+        {% for trip in trips %}
+            <li>
+                <a href="/trip/{{ trip.id }}">
+                    {{ trip.name }} - {{ trip.date }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

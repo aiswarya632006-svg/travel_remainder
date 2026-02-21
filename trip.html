@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trip</title>
+</head>
+<body>
+    <h1>{{ trip.name }}</h1>
+    <h3>Date: {{ trip.date }}</h3>
+
+    <h3>Packing Progress: {{ progress }}%</h3>
+
+    <ul>
+        {% for item in items %}
+        <li>
+            {% if item.status == 1 %}
+                ✅ {{ item.name }}
+            {% else %}
+                ⬜ {{ item.name }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <br>
+    <a href="/">Back</a>
+</body>
+</html>
